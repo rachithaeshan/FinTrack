@@ -1,0 +1,84 @@
+<p>categories works!</p>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">💰 FinTrack</div>
+    <nav>
+      <a routerLink="/dashboard" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/transactions" class="nav-item">💳 Transactions</a>
+      <a routerLink="/budgets" class="nav-item">🎯 Budgets</a>
+      <a routerLink="/categories" class="nav-item active">🏷️ Categories</a>
+    </nav>
+    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
+  </aside>
+
+  <main class="main">
+    <div class="header">
+      <div>
+        <h1>Categories</h1>
+        <p>Organize your income and expenses</p>
+      </div>
+      <button class="btn-primary" (click)="openForm()">+ Add Category</button>
+    </div>
+
+    <!-- Form Modal -->
+    <div class="modal-overlay" *ngIf="showForm">
+      <div class="modal">
+        <h3>{{ editingId ? 'Edit' : 'Add' }} Category</h3>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" [(ngModel)]="form.name" placeholder="e.g. Salary">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select [(ngModel)]="form.type">
+            <option value="INCOME">Income</option>
+            <option value="EXPENSE">Expense</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="showForm = false">Cancel</button>
+          <button class="btn-primary" (click)="save()" [disabled]="saving">{{ editingId ? 'Update' : 'Save' }}</button>
+        </div>
+        <div *ngIf="error" class="form-error">{{ error }}</div>
+      </div>
+    </div>
+
+    <div class="categories-grid">
+      <!-- Income -->
+      <div class="category-section">
+        <h3 class="section-title income-title">📈 Income Categories</h3>
+        <div class="empty-section" *ngIf="incomeCategories().length === 0">
+          No income categories yet
+        </div>
+        <div class="category-list">
+          <div class="category-item" *ngFor="let c of incomeCategories()">
+            <span class="cat-name">{{ c.name }}</span>
+            <span class="cat-badge income">INCOME</span>
+            <div class="cat-actions">
+              <button (click)="edit(c)">✏️</button>
+              <button (click)="delete(c.id)">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expense -->
+      <div class="category-section">
+        <h3 class="section-title expense-title">📉 Expense Categories</h3>
+        <div class="empty-section" *ngIf="expenseCategories().length === 0">
+          No expense categories yet
+        </div>
+        <div class="category-list">
+          <div class="category-item" *ngFor="let c of expenseCategories()">
+            <span class="cat-name">{{ c.name }}</span>
+            <span class="cat-badge expense">EXPENSE</span>
+            <div class="cat-actions">
+              <button (click)="edit(c)">✏️</button>
+              <button (click)="delete(c.id)">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,79 @@
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">💰 FinTrack</div>
+    <nav>
+      <a routerLink="/dashboard" class="nav-item active">📊 Dashboard</a>
+      <a routerLink="/transactions" class="nav-item">💳 Transactions</a>
+      <a routerLink="/budgets" class="nav-item">🎯 Budgets</a>
+      <a routerLink="/categories" class="nav-item">🏷️ Categories</a>
+    </nav>
+    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <p>Welcome back! Here's your financial overview.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="cards">
+      <div class="card income">
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+          <span class="label">Total Income</span>
+          <span class="value">{{ summary.totalIncome | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="card expense">
+        <div class="card-icon">📉</div>
+        <div class="card-info">
+          <span class="label">Total Expenses</span>
+          <span class="value">{{ summary.totalExpense | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="card balance">
+        <div class="card-icon">💰</div>
+        <div class="card-info">
+          <span class="label">Balance</span>
+          <span class="value">{{ summary.balance | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="section">
+      <div class="section-header">
+        <h3>Recent Transactions</h3>
+        <a routerLink="/transactions" class="view-all">View all →</a>
+      </div>
+      <div class="empty" *ngIf="transactions.length === 0">
+        No transactions yet. <a routerLink="/transactions">Add one!</a>
+      </div>
+      <table *ngIf="transactions.length > 0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transactions">
+            <td>{{ t.title }}</td>
+            <td>
+              <span [class]="t.type === 'INCOME' ? 'badge-income' : 'badge-expense'">
+                {{ t.type }}
+              </span>
+            </td>
+            <td>{{ t.amount | number:'1.2-2' }}</td>
+            <td>{{ t.date }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

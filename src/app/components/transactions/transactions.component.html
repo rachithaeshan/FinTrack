@@ -1,0 +1,109 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">💰 FinTrack</div>
+    <nav>
+      <a routerLink="/dashboard" class="nav-item">📊 Dashboard</a>
+      <a routerLink="/transactions" class="nav-item active">💳 Transactions</a>
+      <a routerLink="/budgets" class="nav-item">🎯 Budgets</a>
+      <a routerLink="/categories" class="nav-item">🏷️ Categories</a>
+    </nav>
+    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
+  </aside>
+
+  <main class="main">
+    <div class="header">
+      <div>
+        <h1>Transactions</h1>
+        <p>Manage your income and expenses</p>
+      </div>
+      <button class="btn-primary" (click)="openForm()">+ Add Transaction</button>
+    </div>
+
+    <!-- Form Modal -->
+    <div class="modal-overlay" *ngIf="showForm">
+      <div class="modal">
+        <h3>{{ editingId ? 'Edit' : 'Add' }} Transaction</h3>
+
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" [(ngModel)]="form.title" placeholder="e.g. Monthly Salary">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" [(ngModel)]="form.amount" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select [(ngModel)]="form.type">
+              <option value="INCOME">Income</option>
+              <option value="EXPENSE">Expense</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" [(ngModel)]="form.date">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select [(ngModel)]="form.category">
+              <option [ngValue]="null">No category</option>
+              <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Note (optional)</label>
+          <input type="text" [(ngModel)]="form.note" placeholder="Any extra details">
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="showForm = false">Cancel</button>
+          <button class="btn-primary" (click)="save()">
+            {{ editingId ? 'Update' : 'Save' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-card">
+      <div class="empty" *ngIf="transactions.length === 0">
+        No transactions yet. Click "Add Transaction" to get started!
+      </div>
+      <table *ngIf="transactions.length > 0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Note</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transactions">
+            <td>{{ t.title }}</td>
+            <td>
+              <span [class]="t.type === 'INCOME' ? 'badge-income' : 'badge-expense'">
+                {{ t.type }}
+              </span>
+            </td>
+            <td>{{ t.category?.name || '—' }}</td>
+            <td>{{ t.amount | number:'1.2-2' }}</td>
+            <td>{{ t.date }}</td>
+            <td>{{ t.note || '—' }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="edit(t)">✏️</button>
+              <button class="btn-delete" (click)="delete(t.id)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
