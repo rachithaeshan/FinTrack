@@ -1,0 +1,170 @@
+<div class="profile-wrapper">
+
+  <!-- Avatar Button -->
+  <button class="avatar-btn" (click)="openModal()" [title]="profile.name">
+    <div class="avatar">{{ getInitials() }}</div>
+  </button>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <h3>Edit profile</h3>
+          <p>Update your personal information</p>
+        </div>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="avatar-section">
+        <div class="modal-avatar">{{ getInitials() }}</div>
+        <div class="avatar-info">
+          <span class="avatar-name">{{ profile.name }}</span>
+          <span class="avatar-role">{{ profile.role }}</span>
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+
+      <div class="modal-body">
+
+        <div class="success-banner" *ngIf="success">
+          <i class="ti ti-circle-check"></i> {{ success }}
+        </div>
+        <div class="error-banner" *ngIf="error">
+          <i class="ti ti-alert-circle"></i> {{ error }}
+        </div>
+
+        <div class="form-field">
+          <label>Full name</label>
+          <div class="input-wrap">
+            <i class="ti ti-user"></i>
+            <input type="text" [(ngModel)]="form.name" placeholder="Your full name">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Email address <span class="readonly-tag">Read only</span></label>
+          <div class="input-wrap readonly">
+            <i class="ti ti-mail"></i>
+            <input type="email" [value]="profile.email" readonly>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>User ID <span class="readonly-tag">Read only</span></label>
+          <div class="input-wrap readonly">
+            <i class="ti ti-fingerprint"></i>
+            <input type="text" [value]="'#' + profile.id" readonly>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Role <span class="readonly-tag">Read only</span></label>
+          <div class="input-wrap readonly">
+            <i class="ti ti-shield"></i>
+            <input type="text" [value]="profile.role" readonly>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+          <div class="danger-zone-header">
+            <i class="ti ti-alert-triangle"></i>
+            <span>Danger zone</span>
+          </div>
+          <div class="danger-zone-body">
+            <div class="danger-zone-info">
+              <p class="dz-title">Delete account</p>
+              <p class="dz-desc">Permanently delete your account and all data. This cannot be undone.</p>
+            </div>
+            <button class="btn-delete-account" (click)="openDeleteModal()">
+              <i class="ti ti-trash"></i>
+              Delete account
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-save" (click)="save()" [disabled]="saving">
+          <span *ngIf="!saving">Save changes</span>
+          <span *ngIf="saving" class="spin-text">
+            <i class="ti ti-loader-2 spin"></i> Saving...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+    <div class="modal delete-modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div class="delete-header-icon">
+          <i class="ti ti-trash"></i>
+        </div>
+        <button class="modal-close" (click)="closeDeleteModal()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <h3>Delete your account?</h3>
+        <p>This will permanently delete your account and remove all your data including:</p>
+
+        <div class="delete-list">
+          <div class="delete-list-item">
+            <i class="ti ti-circle-x"></i> All transactions
+          </div>
+          <div class="delete-list-item">
+            <i class="ti ti-circle-x"></i> All budgets
+          </div>
+          <div class="delete-list-item">
+            <i class="ti ti-circle-x"></i> All categories
+          </div>
+          <div class="delete-list-item">
+            <i class="ti ti-circle-x"></i> Your account and profile
+          </div>
+        </div>
+
+        <div class="delete-warning">
+          <i class="ti ti-alert-triangle"></i>
+          <strong>This action cannot be reversed.</strong>
+        </div>
+
+        <div class="form-field">
+          <label>Type <span class="delete-keyword">DELETE</span> to confirm</label>
+          <div class="input-wrap" [class.error-input]="deleteError">
+            <i class="ti ti-keyboard"></i>
+            <input type="text" [(ngModel)]="deleteConfirmText" placeholder="Type DELETE here"
+              (keyup.enter)="deleteAccount()">
+          </div>
+          <span class="field-error" *ngIf="deleteError">{{ deleteError }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-confirm-delete" (click)="deleteAccount()"
+          [disabled]="deleting || deleteConfirmText !== 'DELETE'">
+          <span *ngIf="!deleting">
+            <i class="ti ti-trash"></i> Delete my account
+          </span>
+          <span *ngIf="deleting" class="spin-text">
+            <i class="ti ti-loader-2 spin"></i> Deleting...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -9,16 +9,30 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.scss']
+  styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  form = { name: '', email: '', password: '' };
+  form = { name: '', email: '', password: '', confirmPassword: '' };
   error = '';
   loading = false;
+  showPassword = false;
+  showConfirm = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
   submit() {
+    if (!this.form.name || !this.form.email || !this.form.password) {
+      this.error = 'Please fill in all fields';
+      return;
+    }
+    if (this.form.password !== this.form.confirmPassword) {
+      this.error = 'Passwords do not match';
+      return;
+    }
+    if (this.form.password.length < 6) {
+      this.error = 'Password must be at least 6 characters';
+      return;
+    }
     this.loading = true;
     this.error = '';
     this.auth.register(this.form).subscribe({

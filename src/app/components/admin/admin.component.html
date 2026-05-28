@@ -1,0 +1,228 @@
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="ti ti-shield-check"></i></div>
+      <span>Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-link active">
+        <i class="ti ti-users"></i><span>User Management</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="nav-link logout" (click)="goBack()">
+        <i class="ti ti-arrow-left"></i><span>Back to App</span>
+      </button>
+      <button class="nav-link logout" (click)="auth.logout()">
+        <i class="ti ti-logout"></i><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>User Management</h1>
+        <p>Manage users, view activity reports</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-export excel" (click)="exportExcel()">
+          <i class="ti ti-file-spreadsheet"></i> Export Excel
+        </button>
+        <button class="btn-export pdf" (click)="exportPDF()">
+          <i class="ti ti-file-type-pdf"></i> Export PDF
+        </button>
+      </div>
+    </div>
+
+    
+    
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-icon"><i class="ti ti-users"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalUsers || 0 }}</span>
+          <span class="stat-label">Total users</span>
+        </div>
+      </div>
+      <div class="stat-card active">
+        <div class="stat-icon"><i class="ti ti-user-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.activeUsers || 0 }}</span>
+          <span class="stat-label">Active users</span>
+        </div>
+      </div>
+      <div class="stat-card blocked">
+        <div class="stat-icon"><i class="ti ti-user-x"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.blockedUsers || 0 }}</span>
+          <span class="stat-label">Blocked users</span>
+        </div>
+      </div>
+      <div class="stat-card transactions">
+        <div class="stat-icon"><i class="ti ti-credit-card"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalTransactions || 0 }}</span>
+          <span class="stat-label">Total transactions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3>All users</h3>
+        <span class="user-count">{{ users.length }} users</span>
+      </div>
+
+      <div class="error-state" *ngIf="error" style="padding: 20px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c00; margin-bottom: 20px;">
+        <i class="ti ti-alert-circle"></i> {{ error }}
+      </div>
+
+      <div class="loading-state" *ngIf="loading">
+        <i class="ti ti-loader-2 spin"></i> Loading users...
+      </div>
+
+      <table *ngIf="!loading">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>
+              <div class="user-cell">
+                <div class="avatar">{{ user.name?.charAt(0)?.toUpperCase() }}</div>
+                <span class="user-name">{{ user.name }}</span>
+              </div>
+            </td>
+            <td class="td-muted">{{ user.email }}</td>
+            <td>
+              <span class="badge" [class.badge-admin]="user.role === 'ADMIN'"
+                    [class.badge-user]="user.role === 'USER'">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>
+              <span class="status-dot" [class.active]="!user.blocked"
+                    [class.blocked]="user.blocked">
+                {{ user.blocked ? 'Blocked' : 'Active' }}
+              </span>
+            </td>
+            <td class="td-muted">
+              {{ formatDate(user.createdAt) }}
+            </td>
+            <td class="td-actions">
+              <button class="btn-action view" (click)="viewActivity(user)" title="View activity">
+                <i class="ti ti-chart-bar"></i>
+              </button>
+              <button class="btn-action"
+                      [class.block]="!user.blocked"
+                      [class.unblock]="user.blocked"
+                      (click)="toggleBlock(user)"
+                      [disabled]="user.role === 'ADMIN'"
+                      [title]="user.blocked ? 'Unblock user' : 'Block user'">
+                <i [class]="user.blocked ? 'ti ti-lock-open' : 'ti ti-lock'"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Activity Modal -->
+  <div class="modal-backdrop" *ngIf="selectedUser">
+    <div class="activity-modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="avatar lg">{{ selectedUser.name?.charAt(0)?.toUpperCase() }}</div>
+          <div>
+            <h3>{{ selectedUser.name }}</h3>
+            <p>{{ selectedUser.email }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeActivity()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="loading-state" *ngIf="activityLoading">
+          <i class="ti ti-loader-2 spin"></i> Loading activity...
+        </div>
+
+        <div *ngIf="!activityLoading && userActivity">
+          <div class="activity-stats">
+            <div class="act-stat">
+              <span class="act-value">{{ userActivity.totalTransactions }}</span>
+              <span class="act-label">Total transactions</span>
+            </div>
+            <div class="act-stat income">
+              <span class="act-value">{{ userActivity.incomeTransactions }}</span>
+              <span class="act-label">Income entries</span>
+            </div>
+            <div class="act-stat expense">
+              <span class="act-value">{{ userActivity.expenseTransactions }}</span>
+              <span class="act-label">Expense entries</span>
+            </div>
+          </div>
+
+          <div class="activity-summary">
+            <div class="summary-row">
+              <span>Total income</span>
+              <span class="income-val">{{ userActivity.totalIncome | number:'1.2-2' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Total expenses</span>
+              <span class="expense-val">{{ userActivity.totalExpense | number:'1.2-2' }}</span>
+            </div>
+            <div class="summary-row total">
+              <span>Net balance</span>
+              <span>{{ (userActivity.totalIncome - userActivity.totalExpense) | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <div class="user-meta">
+            <div class="meta-row">
+              <i class="ti ti-calendar"></i>
+              <span>Joined {{ formatDate(userActivity.user.createdAt) }}</span>
+            </div>
+            <div class="meta-row">
+              <i class="ti ti-shield"></i>
+              <span>Role: {{ userActivity.user.role }}</span>
+            </div>
+            <div class="meta-row">
+              <i class="ti ti-circle-dot"></i>
+              <span>Status: {{ userActivity.user.blocked ? 'Blocked' : 'Active' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeActivity()">Close</button>
+        <button class="btn-block"
+                [class.unblock]="selectedUser.blocked"
+                (click)="toggleBlock(selectedUser); closeActivity()"
+                [disabled]="selectedUser.role === 'ADMIN'">
+          <i [class]="selectedUser.blocked ? 'ti ti-lock-open' : 'ti ti-lock'"></i>
+          {{ selectedUser.blocked ? 'Unblock user' : 'Block user' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

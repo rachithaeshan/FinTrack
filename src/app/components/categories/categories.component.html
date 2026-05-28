@@ -1,84 +1,167 @@
-<p>categories works!</p>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">💰 FinTrack</div>
-    <nav>
-      <a routerLink="/dashboard" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/transactions" class="nav-item">💳 Transactions</a>
-      <a routerLink="/budgets" class="nav-item">🎯 Budgets</a>
-      <a routerLink="/categories" class="nav-item active">🏷️ Categories</a>
-    </nav>
-    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
-  </aside>
+<div class="app-layout">
 
-  <main class="main">
-    <div class="header">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+
+    <div class="page-header">
       <div>
         <h1>Categories</h1>
         <p>Organize your income and expenses</p>
       </div>
-      <button class="btn-primary" (click)="openForm()">+ Add Category</button>
+
+      <button class="btn-add" (click)="openForm()">
+        <i class="ti ti-plus"></i> Add category
+      </button>
     </div>
 
-    <!-- Form Modal -->
-    <div class="modal-overlay" *ngIf="showForm">
+    <!-- Modal -->
+    <div class="modal-backdrop" *ngIf="showForm">
       <div class="modal">
-        <h3>{{ editingId ? 'Edit' : 'Add' }} Category</h3>
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" [(ngModel)]="form.name" placeholder="e.g. Salary">
+
+        <div class="modal-header">
+          <h3>{{ editingId ? 'Edit category' : 'New category' }}</h3>
+
+          <button class="modal-close" (click)="showForm = false">
+            <i class="ti ti-x"></i>
+          </button>
         </div>
-        <div class="form-group">
-          <label>Type</label>
-          <select [(ngModel)]="form.type">
-            <option value="INCOME">Income</option>
-            <option value="EXPENSE">Expense</option>
-          </select>
+
+        <div class="modal-body">
+
+          <div class="form-field">
+            <label>Name</label>
+
+            <input
+              type="text"
+              [(ngModel)]="form.name"
+              placeholder="e.g. Salary"
+            >
+          </div>
+
+          <div class="form-field">
+            <label>Type</label>
+
+            <select [(ngModel)]="form.type">
+              <option value="INCOME">Income</option>
+              <option value="EXPENSE">Expense</option>
+            </select>
+          </div>
+
         </div>
-        <div class="modal-actions">
-          <button class="btn-secondary" (click)="showForm = false">Cancel</button>
-          <button class="btn-primary" (click)="save()" [disabled]="saving">{{ editingId ? 'Update' : 'Save' }}</button>
+
+        <div class="modal-footer">
+
+          <button class="btn-cancel" (click)="showForm = false">
+            Cancel
+          </button>
+
+          <button class="btn-save" (click)="save()">
+            {{ editingId ? 'Update' : 'Save' }}
+          </button>
+
         </div>
-        <div *ngIf="error" class="form-error">{{ error }}</div>
+
       </div>
     </div>
 
+    <!-- Categories Grid -->
     <div class="categories-grid">
+
       <!-- Income -->
-      <div class="category-section">
-        <h3 class="section-title income-title">📈 Income Categories</h3>
-        <div class="empty-section" *ngIf="incomeCategories().length === 0">
+      <div class="cat-section">
+
+        <div class="section-label income-label">
+          <i class="ti ti-arrow-up-right"></i>
+          Income
+        </div>
+
+        <div
+          class="empty-section"
+          *ngIf="incomeCategories().length === 0"
+        >
           No income categories yet
         </div>
-        <div class="category-list">
-          <div class="category-item" *ngFor="let c of incomeCategories()">
-            <span class="cat-name">{{ c.name }}</span>
-            <span class="cat-badge income">INCOME</span>
+
+        <div class="cat-list">
+
+          <div
+            class="cat-item"
+            *ngFor="let c of incomeCategories()"
+          >
+
+            <div class="cat-dot income"></div>
+
+            <span class="cat-name">
+              {{ c.name }}
+            </span>
+
             <div class="cat-actions">
-              <button (click)="edit(c)">✏️</button>
-              <button (click)="delete(c.id)">🗑️</button>
+
+              <button class="icon-btn" (click)="edit(c)">
+                <i class="ti ti-edit"></i>
+              </button>
+
+              <button class="icon-btn danger" (click)="delete(c.id)">
+                <i class="ti ti-trash"></i>
+              </button>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
 
       <!-- Expense -->
-      <div class="category-section">
-        <h3 class="section-title expense-title">📉 Expense Categories</h3>
-        <div class="empty-section" *ngIf="expenseCategories().length === 0">
+      <div class="cat-section">
+
+        <div class="section-label expense-label">
+          <i class="ti ti-arrow-down-right"></i>
+          Expense
+        </div>
+
+        <div
+          class="empty-section"
+          *ngIf="expenseCategories().length === 0"
+        >
           No expense categories yet
         </div>
-        <div class="category-list">
-          <div class="category-item" *ngFor="let c of expenseCategories()">
-            <span class="cat-name">{{ c.name }}</span>
-            <span class="cat-badge expense">EXPENSE</span>
+
+        <div class="cat-list">
+
+          <div
+            class="cat-item"
+            *ngFor="let c of expenseCategories()"
+          >
+
+            <div class="cat-dot expense"></div>
+
+            <span class="cat-name">
+              {{ c.name }}
+            </span>
+
             <div class="cat-actions">
-              <button (click)="edit(c)">✏️</button>
-              <button (click)="delete(c.id)">🗑️</button>
+
+              <button class="icon-btn" (click)="edit(c)">
+                <i class="ti ti-edit"></i>
+              </button>
+
+              <button class="icon-btn danger" (click)="delete(c.id)">
+                <i class="ti ti-trash"></i>
+              </button>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </main>
+
 </div>

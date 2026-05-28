@@ -1,22 +1,280 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="logo">💰</div>
-    <h2>Welcome back</h2>
-    <p class="subtitle">Sign in to FinTrack</p>
+<div class="landing-page">
 
-    <div class="error-msg" *ngIf="error">{{ error }}</div>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon"><i class="ti ti-trending-up"></i></div>
+      <span>FinTrack</span>
+    </div>
+    <div class="nav-links">
+      <a (click)="scrollTo('home')" [class.active]="activeSection==='home'">Home</a>
+      <a (click)="scrollTo('about')" [class.active]="activeSection==='about'">About</a>
+      <a (click)="scrollTo('services')" [class.active]="activeSection==='services'">Services</a>
+      <a (click)="scrollTo('contact')" [class.active]="activeSection==='contact'">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a routerLink="/login" class="btn-signin">Sign In</a>
+      <a routerLink="/register" class="btn-signup">Sign Up</a>
+    </div>
+  </nav>
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" [(ngModel)]="form.email" placeholder="you@example.com">
+  <!-- HOME SECTION -->
+  <section id="home" class="hero-section">
+    <div class="hero-bg">
+      <div class="bg-orb orb-1"></div>
+      <div class="bg-orb orb-2"></div>
+      <div class="bg-orb orb-3"></div>
+      <div class="grid-lines"></div>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" [(ngModel)]="form.password" placeholder="••••••••">
+
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <i class="ti ti-sparkles"></i>
+          Smart Finance Management
+        </div>
+        <h1>
+          Take Control Of<br>
+          <span class="gradient-text">Your Finances</span>
+        </h1>
+        <p>Track income, manage budgets, and gain powerful insights into your spending habits with our intelligent finance platform.</p>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">10K+</span>
+            <span class="stat-label">Active users</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">Rs.2M+</span>
+            <span class="stat-label">Tracked monthly</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">4.9★</span>
+            <span class="stat-label">User rating</span>
+          </div>
+        </div>
+
+        <div class="hero-cta">
+          <a routerLink="/register" class="cta-primary">
+            Get started free
+            <i class="ti ti-arrow-right"></i>
+          </a>
+          <a (click)="scrollTo('about')" class="cta-secondary">
+            Learn more
+          </a>
+        </div>
+      </div>
+
+      <!-- Login Card -->
+      <div class="hero-right">
+        <div class="login-card">
+          <div class="login-card-header">
+            <h3>Sign In</h3>
+            <p>Enter your credentials to continue</p>
+          </div>
+
+          <div class="error-banner" *ngIf="error">
+            <i class="ti ti-alert-circle"></i> {{ error }}
+          </div>
+
+          <div class="form-field">
+            <label>Email address</label>
+            <div class="input-wrapper">
+              <i class="ti ti-mail"></i>
+              <input type="email" [(ngModel)]="form.email"
+                     placeholder="you@example.com"
+                     (keyup.enter)="submit()">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Password</label>
+            <div class="input-wrapper">
+              <i class="ti ti-lock"></i>
+              <input [type]="showPassword ? 'text' : 'password'"
+                     [(ngModel)]="form.password"
+                     placeholder="••••••••"
+                     (keyup.enter)="submit()">
+              <button class="toggle-pass" (click)="showPassword=!showPassword" type="button">
+                <i [class]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-login" (click)="submit()" [disabled]="loading">
+            <span *ngIf="!loading">Sign In</span>
+            <span *ngIf="loading" class="spinner-text">
+              <i class="ti ti-loader-2 spin"></i> Signing in...
+            </span>
+          </button>
+
+          <p class="login-footer">
+            New here? <a routerLink="/register">Create an account</a>
+          </p>
+        </div>
+      </div>
     </div>
-    <button class="btn-primary" (click)="submit()" [disabled]="loading">
-      {{ loading ? 'Signing in...' : 'Sign In' }}
-    </button>
-    <p class="switch-link">Don't have an account? <a routerLink="/register">Register</a></p>
-  </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="about-section">
+    <div class="section-container">
+      <div class="section-badge">About us</div>
+      <h2>Built for <span class="gradient-text">smarter</span> money decisions</h2>
+      <p class="section-desc">FinTrack was built to help everyday people take control of their financial life with tools that are simple, powerful, and beautiful.</p>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon teal">
+            <i class="ti ti-eye"></i>
+          </div>
+          <h4>Our Vision</h4>
+          <p>Make personal finance accessible, intuitive, and stress-free for everyone regardless of their financial background.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon purple">
+            <i class="ti ti-heart"></i>
+          </div>
+          <h4>Our Mission</h4>
+          <p>Empower individuals with real-time insights and intelligent budgeting tools to achieve their financial goals faster.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon amber">
+            <i class="ti ti-users"></i>
+          </div>
+          <h4>Our Team</h4>
+          <p>A passionate group of developers and designers committed to building the most intuitive finance tracker available.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section id="services" class="services-section">
+    <div class="section-container">
+      <div class="section-badge light">Services</div>
+      <h2>Everything you need to <span class="gradient-text-light">manage money</span></h2>
+      <p class="section-desc light">Powerful features designed to give you complete visibility and control over your finances.</p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="ti ti-credit-card"></i>
+          </div>
+          <h4>Transaction Tracking</h4>
+          <p>Log every income and expense with categories, notes, and dates. Filter and search your full financial history.</p>
+          <div class="service-tag">Core feature</div>
+        </div>
+        <div class="service-card featured">
+          <div class="featured-badge">Most popular</div>
+          <div class="service-icon featured">
+            <i class="ti ti-target"></i>
+          </div>
+          <h4>Smart Budgeting</h4>
+          <p>Set monthly budgets per category and get real-time alerts when you're approaching your spending limits.</p>
+          <div class="service-tag featured">AI powered</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="ti ti-chart-bar"></i>
+          </div>
+          <h4>Visual Insights</h4>
+          <p>Beautiful charts and graphs that transform your raw financial data into actionable insights at a glance.</p>
+          <div class="service-tag">Analytics</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="ti ti-tag"></i>
+          </div>
+          <h4>Custom Categories</h4>
+          <p>Create and manage your own income and expense categories to match your unique financial lifestyle.</p>
+          <div class="service-tag">Flexible</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="ti ti-shield-check"></i>
+          </div>
+          <h4>Secure & Private</h4>
+          <p>Your data is protected with JWT authentication and encrypted storage. Your finances stay private.</p>
+          <div class="service-tag">Security</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="ti ti-file-report"></i>
+          </div>
+          <h4>Export Reports</h4>
+          <p>Generate and download detailed PDF and Excel reports of your financial activity anytime you need.</p>
+          <div class="service-tag">Reports</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="contact-section">
+    <div class="section-container">
+      <div class="section-badge">Contact</div>
+      <h2>Get in <span class="gradient-text">touch</span></h2>
+      <p class="section-desc">Have questions or feedback? We'd love to hear from you.</p>
+
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon"><i class="ti ti-mail"></i></div>
+            <div>
+              <h5>Email us</h5>
+              <p>support@fintrack.app</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="ti ti-map-pin"></i></div>
+            <div>
+              <h5>Location</h5>
+              <p>Colombo, Sri Lanka</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="ti ti-clock"></i></div>
+            <div>
+              <h5>Support hours</h5>
+              <p>Mon–Fri, 9am–6pm IST</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <div class="cf-field">
+            <input type="text" placeholder="Your name">
+          </div>
+          <div class="cf-field">
+            <input type="email" placeholder="Your email">
+          </div>
+          <div class="cf-field">
+            <textarea rows="4" placeholder="Your message"></textarea>
+          </div>
+          <button class="cf-submit">
+            Send message <i class="ti ti-send"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="brand-icon small"><i class="ti ti-trending-up"></i></div>
+        <span>FinTrack</span>
+      </div>
+      <p>© 2026 FinTrack. All rights reserved.</p>
+      <div class="footer-links">
+        <a routerLink="/login">Sign In</a>
+        <a routerLink="/register">Sign Up</a>
+      </div>
+    </div>
+  </footer>
+
 </div>

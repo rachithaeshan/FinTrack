@@ -1,79 +1,69 @@
-<div class="layout">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="brand">💰 FinTrack</div>
-    <nav>
-      <a routerLink="/dashboard" class="nav-item active">📊 Dashboard</a>
-      <a routerLink="/transactions" class="nav-item">💳 Transactions</a>
-      <a routerLink="/budgets" class="nav-item">🎯 Budgets</a>
-      <a routerLink="/categories" class="nav-item">🏷️ Categories</a>
-    </nav>
-    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
-  </aside>
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
 
-  <!-- Main Content -->
-  <main class="main">
-    <div class="header">
-      <h1>Dashboard</h1>
-      <p>Welcome back! Here's your financial overview.</p>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Your financial overview</p>
+      </div>
+  
     </div>
 
-    <!-- Summary Cards -->
-    <div class="cards">
-      <div class="card income">
-        <div class="card-icon">📈</div>
-        <div class="card-info">
-          <span class="label">Total Income</span>
-          <span class="value">{{ summary.totalIncome | number:'1.2-2' }}</span>
+    <div class="stats-grid">
+      <div class="stat-card income">
+        <div class="stat-label">
+          Total income
+          <i class="ti ti-arrow-up-right" style="color:#14b8a6"></i>
         </div>
+        <div class="stat-value">{{ summary.totalIncome | number:'1.2-2' }}</div>
+        <div class="stat-sub income"><i class="ti ti-trending-up"></i> This month</div>
       </div>
-      <div class="card expense">
-        <div class="card-icon">📉</div>
-        <div class="card-info">
-          <span class="label">Total Expenses</span>
-          <span class="value">{{ summary.totalExpense | number:'1.2-2' }}</span>
+      <div class="stat-card expense">
+        <div class="stat-label">
+          Total expenses
+          <i class="ti ti-arrow-down-right" style="color:#f43f5e"></i>
         </div>
+        <div class="stat-value">{{ summary.totalExpense | number:'1.2-2' }}</div>
+        <div class="stat-sub expense"><i class="ti ti-trending-down"></i> This month</div>
       </div>
-      <div class="card balance">
-        <div class="card-icon">💰</div>
-        <div class="card-info">
-          <span class="label">Balance</span>
-          <span class="value">{{ summary.balance | number:'1.2-2' }}</span>
+      <div class="stat-card balance">
+        <div class="stat-label">
+          Balance
+          <i class="ti ti-wallet" style="color:#8b5cf6"></i>
         </div>
+        <div class="stat-value">{{ summary.balance | number:'1.2-2' }}</div>
+        <div class="stat-sub balance"><i class="ti ti-check"></i> Available</div>
       </div>
     </div>
 
-    <!-- Recent Transactions -->
-    <div class="section">
-      <div class="section-header">
-        <h3>Recent Transactions</h3>
-        <a routerLink="/transactions" class="view-all">View all →</a>
+    <div class="card">
+      <div class="card-header">
+        <h3>Recent transactions</h3>
+        <a routerLink="/transactions" class="link-more">
+          View all <i class="ti ti-arrow-right"></i>
+        </a>
       </div>
-      <div class="empty" *ngIf="transactions.length === 0">
-        No transactions yet. <a routerLink="/transactions">Add one!</a>
+
+      <div class="empty-state" *ngIf="transactions.length === 0">
+        <i class="ti ti-receipt-off"></i>
+        <p>No transactions yet — add one to get started!</p>
       </div>
-      <table *ngIf="transactions.length > 0">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of transactions">
-            <td>{{ t.title }}</td>
-            <td>
-              <span [class]="t.type === 'INCOME' ? 'badge-income' : 'badge-expense'">
-                {{ t.type }}
-              </span>
-            </td>
-            <td>{{ t.amount | number:'1.2-2' }}</td>
-            <td>{{ t.date }}</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div class="tx-list" *ngIf="transactions.length > 0">
+        <div class="tx-item" *ngFor="let t of transactions">
+          <div class="tx-icon" [class.income]="t.type==='INCOME'" [class.expense]="t.type==='EXPENSE'">
+            <i [class]="t.type==='INCOME' ? 'ti ti-arrow-up' : 'ti ti-arrow-down'"></i>
+          </div>
+          <div class="tx-info">
+            <span class="tx-title">{{ t.title }}</span>
+            <span class="tx-meta">{{ t.category?.name || 'Uncategorized' }} · {{ t.date }}</span>
+          </div>
+          <div class="tx-amount" [class.income]="t.type==='INCOME'" [class.expense]="t.type==='EXPENSE'">
+            {{ t.type === 'INCOME' ? '+' : '-' }}{{ t.amount | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

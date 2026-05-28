@@ -1,70 +1,84 @@
-<p>budgets works!</p>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">💰 FinTrack</div>
-    <nav>
-      <a routerLink="/dashboard" class="nav-item">📊 Dashboard</a>
-      <a routerLink="/transactions" class="nav-item">💳 Transactions</a>
-      <a routerLink="/budgets" class="nav-item active">🎯 Budgets</a>
-      <a routerLink="/categories" class="nav-item">🏷️ Categories</a>
-    </nav>
-    <button class="logout-btn" (click)="auth.logout()">🚪 Logout</button>
-  </aside>
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
 
-  <main class="main">
-    <div class="header">
+  <main class="main-content">
+    <div class="page-header">
       <div>
         <h1>Budgets</h1>
         <p>Set and track your spending limits</p>
       </div>
-      <button class="btn-primary" (click)="openForm()">+ Add Budget</button>
+      <button class="btn-add" (click)="openForm()">
+        <i class="ti ti-plus"></i> Add budget
+      </button>
     </div>
 
-    <!-- Form Modal -->
-    <div class="modal-overlay" *ngIf="showForm">
+    <!-- Modal -->
+    <div class="modal-backdrop" *ngIf="showForm">
       <div class="modal">
-        <h3>{{ editingId ? 'Edit' : 'Add' }} Budget</h3>
-        <div class="form-group">
-          <label>Category</label>
-          <select [(ngModel)]="form.category">
-            <option [ngValue]="null">Select category</option>
-            <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option>
-          </select>
+        <div class="modal-header">
+          <h3>{{ editingId ? 'Edit budget' : 'New budget' }}</h3>
+          <button class="modal-close" (click)="showForm = false"><i class="ti ti-x"></i></button>
         </div>
-        <div class="form-group">
-          <label>Budget Amount</label>
-          <input type="number" [(ngModel)]="form.amount" placeholder="0.00">
+        <div class="modal-body">
+          <div class="form-field">
+            <label>Category</label>
+            <select [(ngModel)]="form.category">
+              <option [ngValue]="null">Select a category</option>
+              <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Budget amount</label>
+            <input type="number" [(ngModel)]="form.amount" placeholder="0.00">
+          </div>
         </div>
-        <div class="modal-actions">
-          <button class="btn-secondary" (click)="showForm = false">Cancel</button>
-          <button class="btn-primary" (click)="save()">{{ editingId ? 'Update' : 'Save' }}</button>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="showForm = false">Cancel</button>
+          <button class="btn-save" (click)="save()">{{ editingId ? 'Update' : 'Save' }}</button>
         </div>
       </div>
     </div>
 
-    <!-- Budget Cards -->
-    <div class="empty" *ngIf="budgets.length === 0">
-      No budgets yet. Click "Add Budget" to get started!
+    <div class="empty-state card" *ngIf="budgets.length === 0">
+      <i class="ti ti-target-off"></i>
+      <p>No budgets yet. Add one to start tracking spending!</p>
     </div>
+
     <div class="budget-grid">
       <div class="budget-card" *ngFor="let b of budgets" [class.over]="isOverBudget(b)">
-        <div class="budget-header">
-          <span class="category-name">{{ b.category?.name || 'Uncategorized' }}</span>
+        <div class="budget-card-header">
+          <div class="budget-info">
+            <div class="budget-icon">
+              <i class="ti ti-tag"></i>
+            </div>
+            <div>
+              <p class="budget-category">{{ b.category?.name || 'Uncategorized' }}</p>
+              <p class="budget-period">Monthly</p>
+            </div>
+          </div>
           <div class="budget-actions">
-            <button (click)="edit(b)">✏️</button>
-            <button (click)="delete(b.id)">🗑️</button>
+            <button class="icon-btn" (click)="edit(b)"><i class="ti ti-edit"></i></button>
+            <button class="icon-btn danger" (click)="delete(b.id)"><i class="ti ti-trash"></i></button>
           </div>
         </div>
-        <div class="amounts">
-          <span class="spent">Spent: <strong>{{ getSpent(b) | number:'1.2-2' }}</strong></span>
-          <span class="limit">Limit: <strong>{{ b.amount | number:'1.2-2' }}</strong></span>
+
+        <div class="budget-amounts">
+          <span class="spent">{{ getSpent(b) | number:'1.2-2' }} <small>spent</small></span>
+          <span class="limit">of {{ b.amount | number:'1.2-2' }}</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="getPercent(b)"
-               [class.danger]="isOverBudget(b)"></div>
+
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="getPercent(b)" [class.over]="isOverBudget(b)"></div>
         </div>
-        <div class="percent-label" [class.danger-text]="isOverBudget(b)">
-          {{ isOverBudget(b) ? '⚠️ Over budget!' : getPercent(b) + '% used' }}
+
+        <div class="budget-footer">
+          <span class="percent-label" [class.over-text]="isOverBudget(b)">
+            <i class="ti ti-alert-triangle" *ngIf="isOverBudget(b)"></i>
+            {{ isOverBudget(b) ? 'Over budget' : getPercent(b) + '% used' }}
+          </span>
+          <span class="remaining" *ngIf="!isOverBudget(b)">
+            {{ (b.amount - getSpent(b)) | number:'1.2-2' }} left
+          </span>
         </div>
       </div>
     </div>

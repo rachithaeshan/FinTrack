@@ -1,26 +1,113 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="logo">💰</div>
-    <h2>Create Account</h2>
-    <p class="subtitle">Start tracking your finances</p>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="left-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="ti ti-trending-up"></i>
+        </div>
+        <span>FinTrack</span>
+      </div>
 
-    <div class="error-msg" *ngIf="error">{{ error }}</div>
+      <div class="hero-text">
+        <h1>Start your<br><span class="highlight">financial journey</span></h1>
+        <p>Join thousands of people who track and grow their finances with FinTrack.</p>
+      </div>
 
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" [(ngModel)]="form.name" placeholder="John Doe">
+      <div class="features">
+        <div class="feature-item">
+          <div class="feat-icon"><i class="ti ti-chart-bar"></i></div>
+          <span>Visual spending insights</span>
+        </div>
+        <div class="feature-item">
+          <div class="feat-icon"><i class="ti ti-target"></i></div>
+          <span>Smart budget tracking</span>
+        </div>
+        <div class="feature-item">
+          <div class="feat-icon"><i class="ti ti-shield-check"></i></div>
+          <span>Secure & private</span>
+        </div>
+      </div>
+
+      <div class="floating-card card-1">
+        <div class="fc-icon income"><i class="ti ti-users"></i></div>
+        <div class="fc-info">
+          <span class="fc-label">Active users</span>
+          <span class="fc-value">10,000+</span>
+        </div>
+      </div>
+      <div class="floating-card card-2">
+        <div class="fc-icon expense"><i class="ti ti-star"></i></div>
+        <div class="fc-info">
+          <span class="fc-label">User rating</span>
+          <span class="fc-value">4.9 / 5.0</span>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" [(ngModel)]="form.email" placeholder="you@example.com">
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Create account</h2>
+        <p>Get started for free</p>
+      </div>
+
+      <div class="error-banner" *ngIf="error">
+        <i class="ti ti-alert-circle"></i>
+        {{ error }}
+      </div>
+
+      <div class="form-field">
+        <label>Full name</label>
+        <div class="input-wrapper">
+          <i class="ti ti-user"></i>
+          <input type="text" [(ngModel)]="form.name" placeholder="John Doe">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Email address</label>
+        <div class="input-wrapper">
+          <i class="ti ti-mail"></i>
+          <input type="email" [(ngModel)]="form.email" placeholder="you@example.com">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <i class="ti ti-lock"></i>
+          <input [type]="showPassword ? 'text' : 'password'"
+                 [(ngModel)]="form.password" placeholder="••••••••">
+          <button class="toggle-pass" (click)="showPassword = !showPassword" type="button">
+            <i [class]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Confirm password</label>
+        <div class="input-wrapper">
+          <i class="ti ti-lock-check"></i>
+          <input [type]="showConfirm ? 'text' : 'password'"
+                 [(ngModel)]="form.confirmPassword" placeholder="••••••••"
+                 (keyup.enter)="submit()">
+          <button class="toggle-pass" (click)="showConfirm = !showConfirm" type="button">
+            <i [class]="showConfirm ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-submit" (click)="submit()" [disabled]="loading">
+        <span *ngIf="!loading">Create account</span>
+        <span *ngIf="loading" class="loading-text">
+          <i class="ti ti-loader-2 spin"></i> Creating...
+        </span>
+      </button>
+
+      <p class="auth-footer">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" [(ngModel)]="form.password" placeholder="••••••••">
-    </div>
-    <button class="btn-primary" (click)="submit()" [disabled]="loading">
-      {{ loading ? 'Creating account...' : 'Create Account' }}
-    </button>
-    <p class="switch-link">Already have an account? <a routerLink="/login">Sign in</a></p>
   </div>
 </div>
