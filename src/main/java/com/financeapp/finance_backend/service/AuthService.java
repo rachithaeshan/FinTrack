@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AuthService implements UserDetailsService {
 
@@ -31,33 +32,69 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles("USER")
+                .roles(user.getRole().name())
                 .build();
     }
 
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail()))
             throw new RuntimeException("Email already in use");
-        }
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(User.Role.USER)
+                .blocked(false)
                 .build();
         userRepository.save(user);
-        return new AuthResponse(jwtUtil.generateToken(user.getEmail()), user.getName(), user.getEmail());
+        return new AuthResponse(
+                jwtUtil.generateToken(user.getEmail(), user.getRole().name()),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+    }
+
+    public AuthResponse registerAdmin(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new RuntimeException("Email already in use");
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(User.Role.ADMIN)
+                .blocked(false)
+                .build();
+        userRepository.save(user);
+        return new AuthResponse(
+                jwtUtil.generateToken(user.getEmail(), user.getRole().name()),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+
+        if (user.isBlocked())
+            throw new RuntimeException("Your account has been blocked");
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new RuntimeException("Invalid credentials");
-        }
-        return new AuthResponse(jwtUtil.generateToken(user.getEmail()), user.getName(), user.getEmail());
+
+        return new AuthResponse(
+                jwtUtil.generateToken(user.getEmail(), user.getRole().name()),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 }

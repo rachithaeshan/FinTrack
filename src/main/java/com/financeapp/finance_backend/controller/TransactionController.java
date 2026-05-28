@@ -16,10 +16,9 @@ import java.util.List;
 public class TransactionController {
     private final TransactionRepository transactionRepo;
     private final UserRepository userRepo;
-    private final CategoryRepository categoryRepo;
 
     private User getUser(UserDetails ud) {
-        return userRepo.findByEmail(ud.getUsername()).orElseThrow();
+        return userRepo.findByEmail(ud.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @GetMapping
@@ -34,9 +33,10 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
+    @SuppressWarnings("null")
     public Transaction update(@PathVariable Long id, @RequestBody Transaction t,
                               @AuthenticationPrincipal UserDetails ud) {
-        Transaction existing = transactionRepo.findById(id).orElseThrow();
+        Transaction existing = transactionRepo.findById((long)id).orElseThrow(() -> new RuntimeException("Transaction not found"));
         existing.setTitle(t.getTitle());
         existing.setAmount(t.getAmount());
         existing.setType(t.getType());
@@ -47,22 +47,23 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{id}")
+    @SuppressWarnings("null")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        transactionRepo.deleteById(id);
+        transactionRepo.deleteById((long)id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/summary")
     public java.util.Map<String, Object> summary(@AuthenticationPrincipal UserDetails ud) {
         Long userId = getUser(ud).getId();
-        var income = transactionRepo.sumIncomeByUserId(userId);
-        var expense = transactionRepo.sumExpenseByUserId(userId);
-        var balance = (income != null ? income : java.math.BigDecimal.ZERO)
+        java.math.BigDecimal income = transactionRepo.sumIncomeByUserId(userId);
+        java.math.BigDecimal expense = transactionRepo.sumExpenseByUserId(userId);
+        java.math.BigDecimal balance = (income != null ? income : java.math.BigDecimal.ZERO)
                 .subtract(expense != null ? expense : java.math.BigDecimal.ZERO);
-        return java.util.Map.of(
-                "totalIncome", income != null ? income : 0,
-                "totalExpense", expense != null ? expense : 0,
-                "balance", balance
-        );
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("totalIncome", income != null ? income : 0);
+        result.put("totalExpense", expense != null ? expense : 0);
+        result.put("balance", balance);
+        return result;
     }
 }

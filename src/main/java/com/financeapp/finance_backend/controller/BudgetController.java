@@ -16,7 +16,7 @@ public class BudgetController {
     private final BudgetRepository budgetRepo;
     private final UserRepository userRepo;
 
-    private User getUser(UserDetails ud) { return userRepo.findByEmail(ud.getUsername()).orElseThrow(); }
+    private User getUser(UserDetails ud) { return userRepo.findByEmail(ud.getUsername()).orElseThrow(() -> new RuntimeException("User not found")); }
 
     @GetMapping
     public List<Budget> getAll(@AuthenticationPrincipal UserDetails ud) {
@@ -30,16 +30,18 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}")
+    @SuppressWarnings("null")
     public Budget update(@PathVariable Long id, @RequestBody Budget b) {
-        Budget existing = budgetRepo.findById(id).orElseThrow();
+        Budget existing = budgetRepo.findById((long)id).orElseThrow(() -> new RuntimeException("Budget not found"));
         existing.setAmount(b.getAmount());
         existing.setCategory(b.getCategory());
         return budgetRepo.save(existing);
     }
 
     @DeleteMapping("/{id}")
+    @SuppressWarnings("null")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        budgetRepo.deleteById(id);
+        budgetRepo.deleteById((long)id);
         return ResponseEntity.noContent().build();
     }
 }

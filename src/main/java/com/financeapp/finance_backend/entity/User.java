@@ -1,7 +1,7 @@
 package com.financeapp.finance_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +27,13 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private boolean blocked = false;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -40,4 +46,6 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Category> categories;
+
+    public enum Role { USER, ADMIN }
 }
